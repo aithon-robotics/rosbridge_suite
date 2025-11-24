@@ -2,6 +2,34 @@
 Changelog for package rosbridge_library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.4 (2025-11-20)
+------------------
+* fix: Apply service timeout parameter correctly (backport `#1125 <https://github.com/RobotWebTools/rosbridge_suite/issues/1125>`_) (`#1130 <https://github.com/RobotWebTools/rosbridge_suite/issues/1130>`_)
+  Co-authored-by: Mike Lanighan <45465435+mlanighan@users.noreply.github.com>
+* Contributors: Błażej Sowa
+
+2.0.3 (2025-11-17)
+------------------
+* fix: Don't add rosapi services to glob patterns if we pass empty `services_glob` parameter (backport `#1115 <https://github.com/RobotWebTools/rosbridge_suite/issues/1115>`_) (`#1117 <https://github.com/RobotWebTools/rosbridge_suite/issues/1117>`_)
+* feat: Allow importing action feedback message types (backport `#1108 <https://github.com/RobotWebTools/rosbridge_suite/issues/1108>`_) (`#1112 <https://github.com/RobotWebTools/rosbridge_suite/issues/1112>`_)
+* feat: Replace cbor with cbor2 library, remove inline implementation (backport `#1107 <https://github.com/RobotWebTools/rosbridge_suite/issues/1107>`_) (`#1110 <https://github.com/RobotWebTools/rosbridge_suite/issues/1110>`_)
+* Contributors: Błażej Sowa
+
+2.0.2 (2025-11-05)
+------------------
+* chore: Update pre-commit hooks (backport `#1090 <https://github.com/RobotWebTools/rosbridge_suite/issues/1090>`_) (`#1100 <https://github.com/RobotWebTools/rosbridge_suite/issues/1100>`_)
+* Fix mypy errors (backport `#1084 <https://github.com/RobotWebTools/rosbridge_suite/issues/1084>`_) (`#1099 <https://github.com/RobotWebTools/rosbridge_suite/issues/1099>`_)
+* feat: Add type annotations, new parameter handling (backport `#1069 <https://github.com/RobotWebTools/rosbridge_suite/issues/1069>`_, `#1060 <https://github.com/RobotWebTools/rosbridge_suite/issues/1060>`_) (`#1098 <https://github.com/RobotWebTools/rosbridge_suite/issues/1098>`_)
+* fix: Change warn to warning (`#1068 <https://github.com/RobotWebTools/rosbridge_suite/issues/1068>`_)
+* chore: Update maintainers (`#1066 <https://github.com/RobotWebTools/rosbridge_suite/issues/1066>`_)
+* refactor: Enable ruff and ament_mypy checks and fix lint errors (`#1063 <https://github.com/RobotWebTools/rosbridge_suite/issues/1063>`_)
+* chore: Use ruff to replace other linters used in pre-commit hook (`#1062 <https://github.com/RobotWebTools/rosbridge_suite/issues/1062>`_)
+* Add pydocstyle lint checks and fix rosdoc2 warnings (`#1057 <https://github.com/RobotWebTools/rosbridge_suite/issues/1057>`_)
+* fix: Clean up package dependencies (`#1054 <https://github.com/RobotWebTools/rosbridge_suite/issues/1054>`_)
+* fix: Correct JSON serialization in PNG compression and update tests (`#1045 <https://github.com/RobotWebTools/rosbridge_suite/issues/1045>`_)
+* fix: Support remapping service names (`#1042 <https://github.com/RobotWebTools/rosbridge_suite/issues/1042>`_)
+* Contributors: Błażej Sowa, Juan David Vergara, Sebastian Castro, pascalauroboa
+
 2.0.1 (2025-05-19)
 ------------------
 * Default subscriber QOS to BestEffort, account for TRANSIENT_LOCAL (`#1033 <https://github.com/RobotWebTools/rosbridge_suite/issues/1033>`_)

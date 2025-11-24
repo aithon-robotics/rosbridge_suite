@@ -1,14 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+from __future__ import annotations
+
 import time
 import unittest
 from threading import Thread
+from typing import Any
 
 import rclpy
 from rclpy.executors import SingleThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile
-from std_msgs.msg import String
-
 from rosbridge_library.internal.message_conversion import FieldTypeMismatchException
 from rosbridge_library.internal.publishers import manager
 from rosbridge_library.internal.topics import (
@@ -16,13 +17,14 @@ from rosbridge_library.internal.topics import (
     TypeConflictException,
 )
 from rosbridge_library.util.ros import is_topic_published
+from std_msgs.msg import String
 
 # Reduce this from its default of 10 to speed up tests
 manager.unregister_timeout = 1.0
 
 
 class TestPublisherManager(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         rclpy.init()
         self.executor = SingleThreadedExecutor()
         self.node = Node("test_publisher_manager")
@@ -31,13 +33,13 @@ class TestPublisherManager(unittest.TestCase):
         self.exec_thread = Thread(target=self.executor.spin)
         self.exec_thread.start()
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         self.executor.remove_node(self.node)
         self.node.destroy_node()
         self.executor.shutdown()
         rclpy.shutdown()
 
-    def test_register_publisher(self):
+    def test_register_publisher(self) -> None:
         """Register a publisher on a clean topic with a good msg type."""
         topic = "/test_register_publisher"
         msg_type = "std_msgs/String"
@@ -59,7 +61,7 @@ class TestPublisherManager(unittest.TestCase):
         self.assertFalse(is_topic_published(self.node, topic))
         self.assertFalse(topic in manager.unregister_timers)
 
-    def test_register_publisher_multiclient(self):
+    def test_register_publisher_multiclient(self) -> None:
         topic = "/test_register_publisher_multiclient"
         msg_type = "std_msgs/String"
         client1 = "client_test_register_publisher_1"
@@ -90,7 +92,7 @@ class TestPublisherManager(unittest.TestCase):
         self.assertFalse(is_topic_published(self.node, topic))
         self.assertFalse(topic in manager.unregister_timers)
 
-    def test_register_publisher_conflicting_types(self):
+    def test_register_publisher_conflicting_types(self) -> None:
         topic = "/test_register_publisher_conflicting_types"
         msg_type = "std_msgs/String"
         msg_type_bad = "std_msgs/Int32"
@@ -107,7 +109,7 @@ class TestPublisherManager(unittest.TestCase):
             TypeConflictException, manager.register, "client2", topic, self.node, msg_type_bad
         )
 
-    def test_register_multiple_publishers(self):
+    def test_register_multiple_publishers(self) -> None:
         topic1 = "/test_register_multiple_publishers1"
         topic2 = "/test_register_multiple_publishers2"
         msg_type = "std_msgs/String"
@@ -148,7 +150,7 @@ class TestPublisherManager(unittest.TestCase):
         self.assertFalse(topic1 in manager.unregister_timers)
         self.assertFalse(topic2 in manager.unregister_timers)
 
-    def test_register_no_msgtype(self):
+    def test_register_no_msgtype(self) -> None:
         topic = "/test_register_no_msgtype"
         client = "client_test_register_no_msgtype"
 
@@ -156,7 +158,7 @@ class TestPublisherManager(unittest.TestCase):
         self.assertFalse(is_topic_published(self.node, topic))
         self.assertRaises(TopicNotEstablishedException, manager.register, client, topic, self.node)
 
-    def test_register_infer_topictype(self):
+    def test_register_infer_topictype(self) -> None:
         topic = "/test_register_infer_topictype"
         client = "client_test_register_infer_topictype"
 
@@ -180,7 +182,7 @@ class TestPublisherManager(unittest.TestCase):
         self.assertTrue(topic in manager.unregister_timers)
         self.assertTrue(is_topic_published(self.node, topic))
 
-    def test_register_multiple_notopictype(self):
+    def test_register_multiple_notopictype(self) -> None:
         topic = "/test_register_multiple_notopictype"
         msg_type = "std_msgs/String"
         client1 = "client_test_register_multiple_notopictype_1"
@@ -212,7 +214,7 @@ class TestPublisherManager(unittest.TestCase):
         self.assertFalse(topic in manager.unregister_timers)
         self.assertFalse(is_topic_published(self.node, topic))
 
-    def test_publish_not_registered(self):
+    def test_publish_not_registered(self) -> None:
         topic = "/test_publish_not_registered"
         msg = {"data": "test publish not registered"}
         client = "client_test_publish_not_registered"
@@ -223,15 +225,15 @@ class TestPublisherManager(unittest.TestCase):
             TopicNotEstablishedException, manager.publish, client, topic, msg, self.node
         )
 
-    def test_publisher_manager_publish(self):
+    def test_publisher_manager_publish(self) -> None:
         """Make sure that publishing works."""
         topic = "/test_publisher_manager_publish"
         msg = {"data": "test publisher manager publish"}
         client = "client_test_publisher_manager_publish"
 
-        received = {"msg": None}
+        received: dict[str, Any] = {"msg": None}
 
-        def cb(msg):
+        def cb(msg: String) -> None:
             received["msg"] = msg
 
         subscriber_qos = QoSProfile(
@@ -244,7 +246,7 @@ class TestPublisherManager(unittest.TestCase):
         time.sleep(0.5)
         self.assertEqual(received["msg"].data, msg["data"])
 
-    def test_publisher_manager_bad_publish(self):
+    def test_publisher_manager_bad_publish(self) -> None:
         """Make sure that bad publishing fails."""
         topic = "/test_publisher_manager_bad_publish"
         client = "client_test_publisher_manager_bad_publish"
@@ -255,3 +257,7 @@ class TestPublisherManager(unittest.TestCase):
         self.assertRaises(
             FieldTypeMismatchException, manager.publish, client, topic, msg, self.node
         )
+
+
+if __name__ == "__main__":
+    unittest.main()
