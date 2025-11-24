@@ -148,7 +148,7 @@ def args_to_action_goal_instance(inst: ROSMessage, args: list | dict[str, Any] |
 class SendGoal(Generic[ROSActionGoalT, ROSActionResultT, ROSActionFeedbackT]):
     """Helper class to send action goals."""
 
-    result: GetResultServiceResponse[ROSActionResultT] | None = None
+    result: GetResultServiceResponse[ROSActionResultT] | Exception | None = None
 
     def __init__(self, server_timeout_time: float = 1.0, sleep_time: float = 0.001) -> None:
         self.server_timeout_time = server_timeout_time
@@ -164,7 +164,8 @@ class SendGoal(Generic[ROSActionGoalT, ROSActionResultT, ROSActionFeedbackT]):
         assert self.goal_handle is not None
         if not self.goal_handle.accepted:
             msg = "Action goal was rejected"
-            raise Exception(msg)
+            self.result = Exception(msg)
+            return
         result_future: Future = self.goal_handle.get_result_async()
         result_future.add_done_callback(self.get_result_cb)
 
@@ -198,6 +199,10 @@ class SendGoal(Generic[ROSActionGoalT, ROSActionResultT, ROSActionFeedbackT]):
             time.sleep(self.sleep_time)
 
         client.destroy()
+
+        if isinstance(self.result, Exception):
+            raise self.result
+
         if self.result is not None:
             # Turn the response into JSON and pass to the callback
             json_response = extract_values(self.result)
