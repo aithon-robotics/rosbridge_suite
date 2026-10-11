@@ -346,7 +346,10 @@ class Protocol:
                 return bson.BSON.encode(msg)
             return json.dumps(msg)
         except Exception as e:
-            self.log("error", f"Unable to serialize message '{msg}': {e}")
+            msg_repr = repr(msg)
+            if len(msg_repr) > 300:
+                msg_repr = f"{msg_repr[:300]}... [{len(msg_repr)} chars total]"
+            self.log("error", f"Unable to serialize message '{msg_repr}': {e}")
             return None
 
     def deserialize(self, msg: str | bytes | bytearray, cid: str | None = None) -> dict[str, Any]:  # noqa: ARG002
