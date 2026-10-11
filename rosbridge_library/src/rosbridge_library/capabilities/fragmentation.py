@@ -84,7 +84,13 @@ class Fragmentation(Capability):
             mid = str(self.fragmentation_seed)
             self.fragmentation_seed = self.fragmentation_seed + 1
 
-        serialized = self.protocol.serialize(message, mid)
+        # For cbor/cbor-raw compression, protocol.send() already encoded `message`
+        # to raw bytes before calling us (it only calls serialize() for the
+        # uncompressed dict path). serialize() only short-circuits bytearray, not
+        # bytes, so calling it again here on already-encoded bytes fails -- and
+        # since serialize() returns None on failure, fragment() would silently
+        # return [], dropping the message entirely instead of fragmenting it.
+        serialized = message if isinstance(message, (bytes, bytearray)) else self.protocol.serialize(message, mid)
 
         if serialized is None:
             return []
